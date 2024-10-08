@@ -9,8 +9,24 @@ if (!OPENAI_API_KEY) {
   throw new Error("Missing OpenAI API Key");
 }
 
-let issues: any[] = [];
-let contractors: any[] = [];
+// Define interfaces for issues and contractors
+interface Issue {
+  id: number;
+  description: string;
+  category: string;
+  raisedBy: string;
+}
+
+interface Contractor {
+  id: number;
+  name: string;
+  specialty: string;
+  rating: number;
+  cost: string;
+}
+
+let issues: Issue[] = [];
+let contractors: Contractor[] = [];
 
 // Function to fetch data
 export async function fetchData() {
@@ -75,30 +91,18 @@ export async function getAIResponse(input: string) {
   return response.response;
 }
 
-// Function to get issues
-export function getIssues() {
+// Update the return type of these functions
+export function getIssues(): Issue[] {
   return issues;
 }
 
-// Function to get contractors
-export function getContractors() {
+export function getContractors(): Contractor[] {
   return contractors;
 }
 
-// Function to find contractors by specialty
-export function findContractorsBySpecialty(specialty: string) {
-  return contractors.filter(contractor => contractor.specialty.toLowerCase() === specialty.toLowerCase());
-}
-
-// Function to simulate contacting a contractor
-export function contactContractor(contractorId: number, issueId: number) {
-  const contractor = contractors.find(c => c.id === contractorId);
-  const issue = issues.find(i => i.id === issueId);
-  if (contractor && issue) {
-    return `Contacting ${contractor.name} about the issue: ${issue.description}`;
-  }
-  return "Unable to contact contractor. Please try again.";
-}
+// If you're not using these functions, you can remove them
+// export function findContractorsBySpecialty(specialty: string) { ... }
+// export function contactContractor(contractorId: number, issueId: number) { ... }
 
 // New function to demonstrate tool calling
 import { z } from "zod"; // Make sure to install and import zod

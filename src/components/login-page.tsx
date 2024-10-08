@@ -130,7 +130,7 @@ export function LoginPageComponent({ onLogin }: LoginPageComponentProps) {
 
         <div className="text-center">
           <p className="text-sm text-gray-600">
-            Don't have an account?{' '}
+            Don&apos;t have an account?{' '}
             <a href="#" className="font-medium text-[#5BC0BE] hover:text-[#3A506B] transition-colors duration-200">
               Sign up
             </a>

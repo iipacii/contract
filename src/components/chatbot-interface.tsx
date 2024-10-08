@@ -1,23 +1,30 @@
 'use client'
 
 import React, { useState, useEffect } from 'react'
-import { Send, Home, Wrench, User, Bell, Menu, ChevronDown, Loader } from 'lucide-react'
-import { getAIResponse, getIssues, getContractors, findContractorsBySpecialty, contactContractor } from '@/utils/langchain-setup'
+import { Send, Home, Wrench, User, Bell, Menu, Loader } from 'lucide-react'
+import { getAIResponse, getIssues, getContractors } from '@/utils/langchain-setup'
 
-// Mock data for issues and contractors (replace with actual API calls later)
-const mockIssues = [
-  { id: 1, description: "Leaky faucet in kitchen", category: "Plumbing" },
-  { id: 2, description: "Broken window in living room", category: "Carpentry" },
-  { id: 3, description: "HVAC not cooling properly", category: "HVAC" },
-]
+// Remove or comment out unused variables
+// const mockIssues = [
+//   { id: 1, description: "Leaky faucet in kitchen", category: "Plumbing" },
+//   { id: 2, description: "Broken window in living room", category: "Carpentry" },
+//   { id: 3, description: "HVAC not cooling properly", category: "HVAC" },
+// ]
 
-const mockContractors = [
-  { id: 1, name: "John Doe", specialty: "Plumbing", rating: 4.5 },
-  { id: 2, name: "Jane Smith", specialty: "Carpentry", rating: 4.8 },
-  { id: 3, name: "Bob Johnson", specialty: "HVAC", rating: 4.2 },
-]
+// const mockContractors = [
+//   { id: 1, name: "John Doe", specialty: "Plumbing", rating: 4.5 },
+//   { id: 2, name: "Jane Smith", specialty: "Carpentry", rating: 4.8 },
+//   { id: 3, name: "Bob Johnson", specialty: "HVAC", rating: 4.2 },
+// ]
 
-const ChatMessage = ({ sender, content, timestamp }) => (
+// Add types for the ChatMessage props
+interface ChatMessageProps {
+  sender: 'user' | 'bot';
+  content: string;
+  timestamp: string;
+}
+
+const ChatMessage: React.FC<ChatMessageProps> = ({ sender, content, timestamp }) => (
   <div className={`flex ${sender === 'user' ? 'justify-end' : 'justify-start'} mb-4`}>
     <div className={`max-w-[70%] p-3 rounded-lg ${sender === 'user' ? 'bg-[#5BC0BE] text-white' : 'bg-white'}`}>
       <p className="text-sm">{content}</p>
@@ -32,8 +39,6 @@ export function ChatbotInterface() {
   ])
   const [input, setInput] = useState('')
   const [isTyping, setIsTyping] = useState(false)
-  const [currentIssue, setCurrentIssue] = useState(null)
-  const [currentContractor, setCurrentContractor] = useState(null)
 
   useEffect(() => {
     // Initial message
@@ -147,7 +152,7 @@ export function ChatbotInterface() {
             </div>
             <div className="flex-1 overflow-y-auto p-4">
               {messages.map((message, index) => (
-                <ChatMessage key={index} {...message} />
+                <ChatMessage key={index} {...message as ChatMessageProps} />
               ))}
               {isTyping && (
                 <div className="flex items-center space-x-2 text-gray-500">

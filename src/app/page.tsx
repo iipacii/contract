@@ -6,17 +6,17 @@ import { ChatbotInterface } from '@/components/chatbot-interface'
 import { fetchData } from '../utils/langchain-setup';
 
 export default function Home() {
-  // Change this line to set isLoggedIn to true by default
   const [isLoggedIn, setIsLoggedIn] = useState(false)
 
-  const handleLogin = (email: string, password: string) => {
+  const handleLogin = (email: string, password: string): string | null => {
     console.log('Login attempt in Home component:', { email, password })
     if (email === 'owner@mail.com' && password === 'pass') {
       console.log('Login successful')
       setIsLoggedIn(true)
+      return null
     } else {
       console.log('Login failed')
-      // Optionally, you could pass an error message back to the LoginPageComponent
+      return 'Invalid email or password'
     }
   }
 
