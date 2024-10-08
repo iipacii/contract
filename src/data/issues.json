@@ -1,0 +1,6 @@
+[
+  { "id": 1, "description": "Leaky faucet in kitchen", "category": "Plumbing", "raisedBy": "David" },
+  { "id": 2, "description": "Faulty electrical outlet in living room", "category": "Electrical", "raisedBy": "Sarah" },
+  { "id": 3, "description": "Broken window in bedroom", "category": "Carpentry", "raisedBy": "Michael" },
+  { "id": 4, "description": "HVAC not cooling properly", "category": "HVAC", "raisedBy": "Emily" }
+]

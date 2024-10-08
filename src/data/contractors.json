@@ -1,0 +1,7 @@
+[
+  { "id": 1, "name": "John Doe", "specialty": "Plumbing", "rating": 4.5, "cost": "$$" },
+  { "id": 2, "name": "Jane Smith", "specialty": "Electrical", "rating": 4.8, "cost": "$$$" },
+  { "id": 3, "name": "Bob Johnson", "specialty": "Carpentry", "rating": 4.2, "cost": "$$" },
+  { "id": 4, "name": "Alice Brown", "specialty": "HVAC", "rating": 4.6, "cost": "$$$" },
+  { "id": 5, "name": "Charlie Wilson", "specialty": "Plumbing", "rating": 4.3, "cost": "$" }
+]

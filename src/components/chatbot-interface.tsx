@@ -1,7 +1,21 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Send, Home, Wrench, User, Bell, Menu, ChevronDown, Loader } from 'lucide-react'
+import { getAIResponse, getIssues, getContractors, findContractorsBySpecialty, contactContractor } from '@/utils/langchain-setup'
+
+// Mock data for issues and contractors (replace with actual API calls later)
+const mockIssues = [
+  { id: 1, description: "Leaky faucet in kitchen", category: "Plumbing" },
+  { id: 2, description: "Broken window in living room", category: "Carpentry" },
+  { id: 3, description: "HVAC not cooling properly", category: "HVAC" },
+]
+
+const mockContractors = [
+  { id: 1, name: "John Doe", specialty: "Plumbing", rating: 4.5 },
+  { id: 2, name: "Jane Smith", specialty: "Carpentry", rating: 4.8 },
+  { id: 3, name: "Bob Johnson", specialty: "HVAC", rating: 4.2 },
+]
 
 const ChatMessage = ({ sender, content, timestamp }) => (
   <div className={`flex ${sender === 'user' ? 'justify-end' : 'justify-start'} mb-4`}>
@@ -18,16 +32,56 @@ export function ChatbotInterface() {
   ])
   const [input, setInput] = useState('')
   const [isTyping, setIsTyping] = useState(false)
+  const [currentIssue, setCurrentIssue] = useState(null)
+  const [currentContractor, setCurrentContractor] = useState(null)
 
-  const handleSend = () => {
+  useEffect(() => {
+    // Initial message
+    setMessages([
+      { sender: 'bot', content: 'Welcome! How can I assist you today? You can ask to view issues, find contractors, or contact a contractor.', timestamp: new Date().toLocaleTimeString() },
+    ])
+  }, [])
+
+  const handleSend = async () => {
     if (input.trim()) {
-      setMessages([...messages, { sender: 'user', content: input, timestamp: '10:05 AM' }])
+      const userMessage = { sender: 'user', content: input, timestamp: new Date().toLocaleTimeString() }
+      setMessages(prev => [...prev, userMessage])
       setInput('')
       setIsTyping(true)
-      setTimeout(() => {
+
+      try {
+        const aiResponse = await getAIResponse(input)
+        
+        if (aiResponse === "Viewing issues...") {
+          setMessages(prev => [...prev, { sender: 'bot', content: aiResponse, timestamp: new Date().toLocaleTimeString() }])
+          const issues = getIssues()
+          const issuesContext = `Here are the current issues:\n${issues.map((issue, index) => `${index + 1}. ${issue.description} (Raised by ${issue.raisedBy})`).join('\n')}\n\nPlease list these issues for the user.`
+          const issuesResponse = await getAIResponse(issuesContext)
+          setMessages(prev => [...prev, { sender: 'bot', content: issuesResponse, timestamp: new Date().toLocaleTimeString() }])
+        } else if (aiResponse === "Finding contractors...") {
+          setMessages(prev => [...prev, { sender: 'bot', content: aiResponse, timestamp: new Date().toLocaleTimeString() }])
+          const contractors = getContractors()
+          const contractorsContext = `Here are the available contractors:\n${contractors.map((contractor, index) => `${index + 1}. ${contractor.name} (${contractor.specialty}, Rating: ${contractor.rating}, Cost: ${contractor.cost})`).join('\n')}\n\nPlease list these contractors for the user and suggest the best one for fixing a leaky faucet.`
+          const contractorsResponse = await getAIResponse(contractorsContext)
+          setMessages(prev => [...prev, { sender: 'bot', content: contractorsResponse, timestamp: new Date().toLocaleTimeString() }])
+        } else if (aiResponse === "Contacting contractor...") {
+          setMessages(prev => [...prev, { sender: 'bot', content: aiResponse, timestamp: new Date().toLocaleTimeString() }])
+          // Here you would implement the logic to contact a contractor
+          // For now, we'll just send a follow-up message
+          const contactingResponse = await getAIResponse("Please provide more details about which contractor you'd like to contact and for which issue.")
+          setMessages(prev => [...prev, { sender: 'bot', content: contactingResponse, timestamp: new Date().toLocaleTimeString() }])
+        } else {
+          // For other responses, we'll pass the previous message context
+          const previousMessage = messages[messages.length - 1].content
+          const contextualResponse = await getAIResponse(`Previous message: "${previousMessage}"\nUser input: "${input}"\nPlease provide a helpful response based on this context.`)
+          setMessages(prev => [...prev, { sender: 'bot', content: contextualResponse, timestamp: new Date().toLocaleTimeString() }])
+        }
+      } catch (error) {
+        console.error('Error getting AI response:', error)
+        setMessages(prev => [...prev, { sender: 'bot', content: 'Sorry, I encountered an error. Please try again.', timestamp: new Date().toLocaleTimeString() }])
+      } finally {
         setIsTyping(false)
-        setMessages(prev => [...prev, { sender: 'bot', content: "I understand you're reporting an issue. Can you please provide more details about the problem?", timestamp: '10:06 AM' }])
-      }, 2000)
+      }
     }
   }
 
